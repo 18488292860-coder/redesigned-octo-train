@@ -40,6 +40,18 @@
   }
   .demo-banner b{color:#a67c00;}
 
+  /* 非闲鱼环境提示条 */
+  .open-hint{
+    display:flex;align-items:center;gap:8px;
+    background:#eef4ff;color:#2b4d80;font-size:12px;
+    padding:9px 12px;border-bottom:1px solid #dce6f7;
+  }
+  .open-hint b{color:#1f6feb;}
+  .open-hint button{
+    margin-left:auto;flex:none;border:none;background:#1f6feb;color:#fff;
+    font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;
+  }
+
   /* 顶部品牌栏 */
   .topbar{
     position:sticky;top:0;z-index:50;
@@ -164,6 +176,12 @@
     <b>示例页面 DEMO</b> · 本页为第三方店铺商品展示，<b>非任何平台官方页面</b>
   </div>
 
+  <!-- 仅在非闲鱼环境显示：引导去闲鱼内打开 -->
+  <div class="open-hint" id="openHint" style="display:none">
+    <span>建议在 <b>闲鱼 App</b> 内打开：复制链接 → 粘贴到闲鱼聊天发送 → 点击卡片</span>
+    <button onclick="copyLink()">复制链接</button>
+  </div>
+
   <header class="topbar">
     <div class="brand">
       <div class="logo">优</div>
@@ -267,6 +285,30 @@
     document.querySelectorAll('#thumbs img').forEach(function(i){ i.classList.remove('active'); });
     el.classList.add('active');
   }
+
+  // 复制当前页链接（供粘贴到闲鱼聊天）
+  function copyLink(){
+    var url = location.href;
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(function(){
+        toast('链接已复制，去闲鱼聊天粘贴发送');
+      }, function(){
+        toast('复制失败，请手动长按复制地址');
+      });
+    } else {
+      toast('复制失败，请手动长按复制地址');
+    }
+  }
+
+  // 判断是否运行在闲鱼 / 阿里系容器内
+  (function(){
+    var ua = navigator.userAgent || '';
+    var inXianyu = /AliApp|idlefish|goofish|Xianyu|闲鱼/i.test(ua);
+    if (!inXianyu){
+      var el = document.getElementById('openHint');
+      if (el) el.style.display = 'flex';
+    }
+  })();
 
   // 轻提示
   var toastTimer;
